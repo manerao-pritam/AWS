@@ -1,0 +1,59 @@
+openapi: "3.0.1"
+info:
+  title: "http-auth-cors"
+  version: "2021-03-19 20:06:55UTC"
+servers:
+- url: "https://{api-id}.execute-api.{region}.amazonaws.com/{basePath}"
+  variables:
+    basePath:
+      default: ""
+paths:
+  /api-event:
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Default response for ANY /api-event"
+      security:
+      - lambda: []
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:{region}:lambda:path/2015-03-31/functions/arn:aws:lambda:{region}:{account-id}:function:{backend-function-name}/invocations"
+        connectionType: "INTERNET"
+  /{proxy+}:
+    options:
+      responses:
+        default:
+          description: "Default response for OPTIONS /{proxy+}"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:{region}:lambda:path/2015-03-31/functions/arn:aws:lambda:{region}:{account-id}:function:{backend-function-name}/invocations"
+        connectionType: "INTERNET"
+components:
+  securitySchemes:
+    lambda:
+      type: "apiKey"
+      name: "authorization"
+      in: "header"
+      x-amazon-apigateway-authorizer:
+        identitySource: "$request.header.authorization"
+        authorizerUri: "arn:aws:apigateway:{region}:lambda:path/2015-03-31/functions/arn:aws:lambda:{region}:{account-id}:function:{auth-function-name}/invocations"
+        authorizerPayloadFormatVersion: "1.0"
+        authorizerResultTtlInSeconds: 300
+        type: "request"
+        enableSimpleResponses: false
+x-amazon-apigateway-cors:
+  allowMethods:
+  - "GET"
+  - "OPTIONS"
+  - "POST"
+  allowHeaders:
+  - "*"
+  maxAge: 0
+  allowCredentials: false
+  allowOrigins:
+  - "https://cloudunfold.com"
+x-amazon-apigateway-importexport-version: "1.0"
