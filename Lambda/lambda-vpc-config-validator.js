@@ -23,7 +23,7 @@ let getLambdaConfigs = async (functionName) => {
     /* This operation retrieves a Lambda function's event source mapping */
     var params = { FunctionName: functionName }
 
-    let lambdaConfigs
+    let lambdaConfigs = ''
 
     try {
         lambdaConfigs = await lambda.getFunctionConfiguration(params).promise()
@@ -38,7 +38,7 @@ let getLambdaConfigs = async (functionName) => {
 
 let getSubnetType = async (subnetId) => {
     let response = []
-    let subnetType = ''
+    // let subnetType = 'Public'
     var params = {
         Filters: [
             {
@@ -58,12 +58,10 @@ let getSubnetType = async (subnetId) => {
 
     for (let route of response[0].RouteTables[0].Routes) {
         if (route.NatGatewayId)
-            subnetType = 'Private'
-        else
-            subnetType = 'Public'
+            return 'Private'
     }
 
-    return subnetType
+    return 'Public'
 }
 
 let getNatGwIds = async (subnetIds) => {
